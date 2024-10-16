@@ -20,7 +20,7 @@ class SERVO_ANGULAR_ROTATION:
     def run(self):
         self.pin1 = 5
         self.obj_arduino.cmd_servo_attach(1,1)
-        sleef(1)
+        sleep(1)
         
         # 90, 45 for test angle value
         self.obj_arduino.cmd_servo_move(1,1,90)
@@ -35,9 +35,8 @@ class SERVO_ANGULAR_ROTATION:
 
         self.obj_arduino.cmd_servo_detach(1,1)
         sleep(1)
-    def exit(self){
+    def exit(self):
         self.obj_arduino.close_serial()
-    }
 
 def main():
     obj_servo = SERVO_ANGULAR_ROTATION(115200)
