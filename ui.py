@@ -239,7 +239,7 @@ class RobotUI(object):
         return alarm_dict
 
     def read_file(self, path):
-        # 读json文件耗时大，选择维护两个变量alarm_controller_list alarm_servo_list
+        # Read .json files is time consuming, optionally maintain alarm_controller_list alarm_servo_list
         # self.read_file("files/alarm_controller.json")
         with open(path, "r", encoding="utf8") as fp:
             json_data = json.load(fp)
@@ -299,7 +299,7 @@ class RobotUI(object):
 
     def connect_port(self):
         if self.global_state["connect"]:
-            print("断开成功")
+            print("Successful disconnected")
             self.client_dash.close()
             self.client_feed.close()
             self.client_move.close()
@@ -312,7 +312,7 @@ class RobotUI(object):
             self.button_connect["text"] = "Connect"
         else:
             try:
-                print("连接成功")
+                print("Successful Connection")
                 self.client_dash = DobotApiDashboard(
                     self.entry_ip.get(), int(self.entry_dash.get()), self.text_log)
                 self.client_move = DobotApiMove(
@@ -370,10 +370,10 @@ class RobotUI(object):
 
     def confirm_do(self):
         if self.combo_status.get() == "On":
-            print("高电平")
+            print("HIGH level")
             self.client_dash.DO(int(self.entry_index.get()), 1)
         else:
-            print("低电平")
+            print("LOW level")
             self.client_dash.DO(int(self.entry_index.get()), 0)
 
     def set_feed(self, text_list, x1, x2, x3, x4):
@@ -434,10 +434,8 @@ class RobotUI(object):
                 # Refresh Properties
                 self.label_feed_speed["text"] = a["speed_scaling"][0]
                 self.label_robot_mode["text"] = LABEL_ROBOT_MODE[a["robot_mode"][0]]
-                self.label_di_input["text"] = bin(a["digital_input_bits"][0])[
-                    2:].rjust(64, '0')
-                self.label_di_output["text"] = bin(a["digital_outputs"][0])[
-                    2:].rjust(64, '0')
+                self.label_di_input["text"] = bin(a["digital_input_bits"][0])[2:].rjust(64, '0')
+                self.label_di_output["text"] = bin(a["digital_outputs"][0])[2:].rjust(64, '0')
 
                 # Refresh coordinate points
                 self.set_feed_joint(LABEL_JOINT, a["q_actual"])

@@ -1,4 +1,3 @@
-
 import threading
 from dobot_api import DobotApiDashboard, DobotApi, DobotApiMove, MyType
 from time import sleep
@@ -11,14 +10,14 @@ def connect_robot():
         dashboard_p = 29999
         move_p = 30003
         feed_p = 30004
-        print("正在建立连接...")
+        print("Connecting...")
         dashboard = DobotApiDashboard(ip, dashboard_p)
         move = DobotApiMove(ip, move_p)
         feed = DobotApi(ip, feed_p)
-        print(">.<连接成功>!<")
+        print(">.< Success Connection >!<")
         return dashboard, move, feed
     except Exception as e:
-        print(":(连接失败:(")
+        print(":( Failed to connect:(")
         raise e
 
 if __name__ == '__main__':
@@ -27,11 +26,11 @@ if __name__ == '__main__':
     """
     ************************************
     ************************************
-        if PARAMS  条件编译 指令是否有参数
-            0  指令不含参数
-            1   指令含参数
+        if PARAMS  compiling condition, check whether parameters are included in commands
+            0  No parameters
+            1   Parameters exist
             
-        包括以下指令的例子：
+        Including samples：
             EnableRobot
             DisableRobot
             DO
@@ -52,34 +51,34 @@ if __name__ == '__main__':
     """
     ************************************
     ************************************
-     * 指令：EnableRobot
-     * 功能：使能机器人
+     * Command：EnableRobot
+     * Function：enable robot
     """
     if PARAMS:
-      dashboard.EnableRobot()    #无参数
+      dashboard.EnableRobot()    #No parameters
     else:
        load=0.1
        centerX=0.1
        centerY=0.1
        centerZ=0.1
-       dashboard.EnableRobot(load)    #一个参数
+       dashboard.EnableRobot(load)    #One parameter
        
-       dashboard.EnableRobot(load, centerX, centerY, centerZ)    #四个参数
+       dashboard.EnableRobot(load, centerX, centerY, centerZ)    #Four parameters
   
     """
     ************************************
     ************************************
-     * 指令：DisableRobotexit
-     * 功能：下使能机器人
+     * Command：DisableRobotexit
+     * Function: disable robot
     """
-    dashboard.DisableRobot()    #无参数
+    dashboard.DisableRobot()    #No parameters
      
      
     """
     ************************************
     ************************************
-     * 指令： DO
-     * 功能：设置数字输出端口状态（队列指令）
+     * Command： DO
+     * Function：set up digital output port status (queue command)
     """
     index=1
     status=1
@@ -89,8 +88,8 @@ if __name__ == '__main__':
     """
      *******************************
      *******************************
-     * 指令： AccJ
-     * 功能：设置关节加速度比例。该指令仅对MovJ、MovJIO、MovJR、 JointMovJ指令有效
+     * Command： AccJ
+     * Function：set up joint acceleration ratio, only available for commands MovJ, MovJIO, MovJR, JointMovJ
     """
     index=1
     dashboard.AccJ(index)  
@@ -99,25 +98,25 @@ if __name__ == '__main__':
     """
      ******************************
      ******************************
-     * 指令： SetArmOrientation
-     * 功能：设置手系指令。
+     * Command： SetArmOrientation
+     * Function：set arm orientation
     """
     if PARAMS:
         LorR=1
-        dashboard.SetArmOrientation(LorR)    #1个参数
+        dashboard.SetArmOrientation(LorR)    #one parameter
     else:
         LorR=1
         UorD=1
         ForN=1
         Config=1
-        dashboard.SetArmOrientation(LorR, UorD, ForN, Config)    #4个参数
+        dashboard.SetArmOrientation(LorR, UorD, ForN, Config)    #four parameters
     
     
     """
     ************************************
     ************************************
-     * 指令： RunScript
-     * 功能：运行lua脚本。
+     * Command： RunScript
+     * Function：run .lua scripts
     """
     name="luaname"
     dashboard.RunScript(name)  
@@ -125,8 +124,8 @@ if __name__ == '__main__':
     """
     ************************************
     ************************************
-     * 指令： PositiveSolution
-     * 功能：正解。（给定机器人各关节的角度，计算出机器人末端的空间位置）
+     * Command： PositiveSolution
+     * Function：forward kinematics (joint -> Cartesian)
     """
     J1=0.1
     J2=0.1
@@ -134,14 +133,14 @@ if __name__ == '__main__':
     J4=0.1
     User=1
     Tool=1
-    dashboard.PositiveSolution(J1, J2, J3, J4,User, Tool)    #1个参数
+    dashboard.PositiveSolution(J1, J2, J3, J4,User, Tool)    # one parameter
 
      
     """
     ************************************
     ************************************
-     * 指令： InverseSolution
-     * 功能：逆解。（已知机器人末端的位置和姿态，计算机器人各关节的角度值）
+     * Command： InverseSolution
+     * Function：Inverse kinematics (Cartesian -> joint)
     """  
     if PARAMS:
         J1=0.1
@@ -150,7 +149,7 @@ if __name__ == '__main__':
         J4=0.1
         User=1
         Tool=1
-        dashboard.InverseSolution(J1, J2, J3, J4,User, Tool)    #1个参数
+        dashboard.InverseSolution(J1, J2, J3, J4,User, Tool)    # one parameter
     else:
         J1=0.1
         J2=0.1
@@ -165,50 +164,50 @@ if __name__ == '__main__':
     """
     ************************************
     ************************************
-     * 指令： ModbusCreate
-     * 功能：创建modbus主站
+     * Command： ModbusCreate
+     * Function：create modbus
     """
     if PARAMS:
         ip="192.168.1.6"
         port=29999
         slave_id=1
-        dashboard.ModbusCreate(ip, port, slave_id)    #3个参数
+        dashboard.ModbusCreate(ip, port, slave_id)
     else:
         ip="192.168.1.6"
         port=29999
         slave_id=1
         isRTU=1
-        dashboard.ModbusCreate(ip, port, slave_id, isRTU)    #4个参数
+        dashboard.ModbusCreate(ip, port, slave_id, isRTU)
      
      
     """
     ************************************
     ************************************
-     * 指令： GetHoldRegs
-     * 功能：读保持寄存器。
+     * Command： GetHoldRegs
+     * Function：read and hold registers
        """
     if PARAMS:
         index=1
         addr=1
         count=1
-        dashboard.GetHoldRegs(index, addr, count)    #3个参数
+        dashboard.GetHoldRegs(index, addr, count)
     else:
         index=1
         addr=1
         count=1
         valType="valType"
-        dashboard.GetHoldRegs(index, addr, count, valType)    #4个参数    
+        dashboard.GetHoldRegs(index, addr, count, valType)  
      
     """
     ************************************
     ************************************
-     * 指令： DOGroup
-     * 功能：设置输出组端口状态  (最大支持64个参数)
+     * Command： DOGroup
+     * Function：set up and output group port status (maximum 64 parameters)
     """
     if PARAMS:
         index=1
         value=1
-        dashboard.DOGroup(index, value)    #2个参数
+        dashboard.DOGroup(index, value)    # 2 parameters
     else:
         index=1
         value=1
@@ -216,21 +215,21 @@ if __name__ == '__main__':
         value2=1
         index32=1
         value32=1
-        dashboard.DOGroup(index, value, index2, value2, index32, value32)    # 64个参数  (参数省略)
+        dashboard.DOGroup(index, value, index2, value2, index32, value32)    # 64 parameters (ignore the rest)
      
      
     """
     ************************************
     ************************************
-     * 指令： MovL
-     * 功能：功能：点到点运动，目标点位为笛卡尔点位
+     * Command： MovL
+     * Function: point-to-point movement, Cartesian coordinates
     """
     if PARAMS:
         x=1.0
         y=1.0
         z=1.0
         r=1.0
-        move.MovL(x, y, z, r)    #无可选参数
+        move.MovL(x, y, z, r)    #no parameters to be selected
     else:
         x=1.0
         y=1.0
@@ -241,19 +240,19 @@ if __name__ == '__main__':
         speedlparam="SpeedL=1"
         acclparam="AccL=1"
         cpparam="CP=1" 
-        move.MovL(x, y, z, r,userparam)    #设置user      可选参数顺序可换
-        move.MovL(x, y, z, r,userparam, toolparam)    #设置user tool
-        move.MovL(x, y, z, r,userparam, toolparam, speedlparam,)    #设置 user  tool  speedl 
-        move.MovL(x, y, z, r,userparam, toolparam, speedlparam, acclparam)    #设置user  user  tool  speedl accl
-        move.MovL(x, y, z, r,userparam, toolparam, speedlparam, acclparam, cpparam)    #设置 user  tool  speedl accl cp
+        move.MovL(x, y, z, r,userparam)    #input user, inputs order can be adjusted
+        move.MovL(x, y, z, r,userparam, toolparam)    #set up user tool
+        move.MovL(x, y, z, r,userparam, toolparam, speedlparam,)    #set up user  tool  speedl 
+        move.MovL(x, y, z, r,userparam, toolparam, speedlparam, acclparam)    # set up user  user  tool  speedl accl
+        move.MovL(x, y, z, r,userparam, toolparam, speedlparam, acclparam, cpparam)    #set up user  tool  speedl accl cp
      
      
     """
     ************************************
     ************************************
-    * 指令： Arc
-    * 功能：：从当前位置以圆弧插补方式移动至笛卡尔坐标系下的目标位置。
- 	该指令需结合其他运动指令确定圆弧起始点。
+    * Command： Arc
+    * Function：Move from the current position to the target in the Cartesian coordinate system by circular interpolation.
+      This command should be combined with other motion commands to determine the starting point of the arc.
     """
     if PARAMS:
         x=1.0
@@ -264,7 +263,7 @@ if __name__ == '__main__':
         y2=1.0
         z2=1.0
         r2=1.0
-        move.Arc(x, y, z, r,x2, y2, z2, r2)    #无可选参数
+        move.Arc(x, y, z, r,x2, y2, z2, r2)
     else:
         x=1.0
         y=1.0
@@ -279,14 +278,15 @@ if __name__ == '__main__':
         speedlparam="SpeedL=1"
         acclparam="AccL=1"
         cpparam="CP=1" 
-        move.Arc(x, y, z, r,x2, y2, z2, r2,cpparam,userparam,speedlparam, toolparam, speedlparam, acclparam)    # user tool 顺序不固定可换
+        move.Arc(x, y, z, r,x2, y2, z2, r2,cpparam,userparam,speedlparam, toolparam, speedlparam, acclparam)    # user tool order cannot be adjusted
  
  
     """
     ************************************
     ************************************
-     * 指令： MovLIO
-     * 功能：在直线运动时并行设置数字输出端口状态，目标点位为笛卡尔点位。
+     * Command： MovLIO
+     * Function：The state of the digital output port is set in parallel during linear trajectory movements, 
+                 target point is the Cartesian coordinates.
     """
     if PARAMS:
         x=1.0
@@ -297,7 +297,7 @@ if __name__ == '__main__':
         Distance=1
         Index=1
         Status=1
-        move.MovLIO(x, y, z, r, Mode, Distance, Index, Status)    #无可选参数
+        move.MovLIO(x, y, z, r, Mode, Distance, Index, Status)
     else:
         x=1.0
         y=1.0
@@ -312,13 +312,13 @@ if __name__ == '__main__':
         speedlparam="SpeedL=1"
         acclparam="AccL=1"
         cpparam="CP=1" 
-        move.MovLIO(x, y, z, r,Mode, Distance, Index, Status,cpparam,userparam,speedlparam, toolparam, speedlparam, acclparam)    # user tool 顺序不固定可换    
+        move.MovLIO(x, y, z, r,Mode, Distance, Index, Status,cpparam,userparam,speedlparam, toolparam, speedlparam, acclparam)    # user tool order cannot be adjusted    
      
     """
     ************************************
     ************************************
-     * 指令： MoveJog
-     * 功能：点动运动，不固定距离运动
+     * Command： MoveJog
+     * Function：point movements, distance not fixed
     """
     if PARAMS:
         axisID=""
@@ -330,15 +330,15 @@ if __name__ == '__main__':
         toolparam="Tool=0"
         move.MoveJog(axisID, CoordType, userparam, toolparam)    
 
-    ##    发MoveJog()停止命令控制机器人停止运动
+    ## send MoveJog() stop command to terminate robot movements
     move.MoveJog()
     
     
     """
     ************************************
     ************************************
-     * 指令： Circle
-     * 功能：整圆运动，仅对笛卡尔点位生效。
+     * Command： Circle
+     * Function：circle movements, only available in Cartesian coordinates
     """   
     if PARAMS:
         x=1.0
