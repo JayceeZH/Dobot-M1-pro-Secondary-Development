@@ -4,7 +4,7 @@ from time import sleep
 import numpy as np
 import re
 
-# 全局变量(当前坐标)
+# Global variables
 current_actual = None
 algorithm_queue = None
 enableStatus_robot = None
@@ -17,14 +17,14 @@ def ConnectRobot():
         dashboardPort = 29999
         movePort = 30003
         feedPort = 30004
-        print("正在建立连接...")
+        print("Connecting...")
         dashboard = DobotApiDashboard(ip, dashboardPort)
         move = DobotApiMove(ip, movePort)
         feed = DobotApi(ip, feedPort)
-        print(">.<连接成功>!<")
+        print(">.< Successful Connection >!<")
         return dashboard, move, feed
     except Exception as e:
-        print(":(连接失败:(")
+        print(":( Failed to connect :(")
         raise e
 
 def RunPoint(move: DobotApiMove, point_list: list):
@@ -71,7 +71,7 @@ def WaitArrive(point_list):
 
 def ClearRobotError(dashboard: DobotApiDashboard):
     global robotErrorState
-    dataController,dataServo =alarmAlarmJsonFile()    # 读取控制器和伺服告警码
+    dataController,dataServo =alarmAlarmJsonFile()    # Input controller and servo alarm state
     while True:
       globalLockValue.acquire()
       if robotErrorState:
@@ -82,23 +82,23 @@ def ClearRobotError(dashboard: DobotApiDashboard):
                     for i in numbers[1:]:
                       alarmState=False
                       if i==-2:
-                          print("机器告警 机器碰撞 ",i)
+                          print("Alarm: Collisions!",i)
                           alarmState=True
                       if alarmState:
                           continue                
                       for item in dataController:
                         if  i==item["id"]:
-                            print("机器告警 Controller errorid",i,item["zh_CN"]["description"])
+                            print("Controller errorID",i,item["en"]["description"])
                             alarmState=True
                             break 
                       if alarmState:
                           continue
                       for item in dataServo:
                         if  i==item["id"]:
-                            print("机器告警 Servo errorid",i,item["zh_CN"]["description"])
+                            print("Servo errorID",i,item["en"]["description"])
                             break  
                        
-                    choose = input("输入1, 将清除错误, 机器继续运行: ")     
+                    choose = input("Input 1 will clear error logs and device keeps running: ")     
                     if  int(choose)==1:
                         dashboard.ClearError()
                         sleep(0.01)

@@ -88,7 +88,7 @@ MyType=np.dtype([('len', np.int16, ),
                 ('Reserve3', np.int8, (24,)),
                 ])
 
-#读取控制器和伺服告警文件
+#Input servo and controller alarm status
 def alarmAlarmJsonFile():
     currrntDirectory=os.path.dirname(__file__)
     jsonContrellorPath=os.path.join(currrntDirectory,alarmControllerFile)
