@@ -4,10 +4,10 @@ from Inverse_Kinematics import inverse_kinematics_m1_pro
 
 # Define the joint ranges for M1-Pro
 joint_ranges = {
-    'joint_1': np.linspace(-180, 180, 20),  # Joint 1 range
-    'joint_2': np.linspace(-90, 90, 30),    # Joint 2 range
-    'joint_3': np.linspace(0, 100, 25),      # Joint 3 range (Prismatic)
-    'joint_4': np.linspace(-180, 180, 40)   # Joint 4 range
+    'joint_1': np.linspace(-56, 56, 20),  # Joint 1 range
+    'joint_2': np.linspace(-120, 120, 30),    # Joint 2 range
+    'joint_3': np.linspace(100, 240, 25),      # Joint 3 range (Prismatic)
+    'joint_4': np.linspace(0, 360, 40)   # Joint 4 range
 }
 
 # Function to read Cartesian coordinates from a file
@@ -19,7 +19,7 @@ def read_cartesian_coordinates(filename):
             cartesian_coords.append(coords)
     return cartesian_coords
 
-# Define Q-learning parameters and actions (as done in previous scripts)
+# Define Q-learning parameters and actions
 alpha = 0.1  # Learning rate
 gamma = 0.95  # Discount factor
 actions = [
@@ -34,10 +34,10 @@ actions = [
     (0, 0, 0, 0)    # No movement
 ]
 
-# Initialize Q-table (make sure the dimensions are appropriate)
+# Initialize Q-table (appropriate dimensions for joint ranges)
 q_table = np.random.uniform(low=-1, high=1, size=(20, 30, 25, 40, len(actions)))
 
-# Function to get discrete state (as done previously)
+# Function to get discrete state
 def get_discrete_state(joint_positions):
     state_indices = []
     for i, joint in enumerate(joint_positions):
@@ -59,11 +59,11 @@ def apply_action(joint_positions, action):
     """
     new_positions = [max(min(joint + delta, max_range), min_range)
                      for joint, (delta, min_range, max_range) in zip(joint_positions, 
-                     [(action[0], -180, 180), (action[1], -90, 90), 
-                      (action[2], 0, 100), (action[3], -180, 180)])]
+                     [(action[0], -56, 56), (action[1], -120, 120), 
+                      (action[2], 100, 240), (action[3], 0, 360)])]
     return tuple(new_positions)
 
-# Update rule (as done previously)
+# Update Q-value
 def update_q_value(state, action, reward, new_state, alpha, gamma):
     current_q = q_table[state + (action,)]
     max_future_q = np.max(q_table[new_state])
@@ -78,13 +78,16 @@ def process_cartesian_file(filename):
     theta4 = math.radians(30)  # desired orientation of the end-effector in radians
     cartesian_coords_list = read_cartesian_coordinates(filename)
     joint_coords_list = []
+
     for episode, cartesian_coords in enumerate(cartesian_coords_list):
         # Print current episode number
         print(f"\nEpisode {episode + 1}/{len(cartesian_coords_list)}")
         
         joint_positions = inverse_kinematics_m1_pro(cartesian_coords[0], cartesian_coords[1], cartesian_coords[2], L1, L2, z_base, theta4)
-        # with open('joint_coordinates.txt', 'w') as f:
-        #     f.write(f"{joint_positions[0]:.2f}, {joint_positions[1]:.2f}, {joint_positions[2]:.2f}, {joint_positions[3]:.2f}\n")
+        
+        # Write joint positions to joint_coordinates.txt
+        with open('joint_coordinates.txt', 'a') as f:  # 'a' mode for appending to file
+            f.write(f"{joint_positions[0]:.2f}, {joint_positions[1]:.2f}, {joint_positions[2]:.2f}, {joint_positions[3]:.2f}\n")
         joint_coords_list.append(joint_positions)
             
         state = get_discrete_state(joint_positions)
@@ -106,9 +109,7 @@ def process_cartesian_file(filename):
         update_q_value(state, action, reward, new_state, alpha, gamma)
         print(f"Updated Q-value for State {state} and Action {action}: {q_table[state + (action,)]}")
     
-    with open('joint_coordinates.txt', 'w') as f:
-        for coords in joint_coords_list:
-            f.write(f"{coords[0]:.2f}, {coords[1]:.2f}, {coords[2]:.2f}, {coords[3]:.2f}\n")
+    print("Processing completed")
 
 # Execute the processing
 process_cartesian_file('cartesian_coordinates.txt')
