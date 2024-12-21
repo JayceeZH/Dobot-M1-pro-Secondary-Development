@@ -1,6 +1,6 @@
 import threading
 from dobot_api import DobotApiDashboard, DobotApi, DobotApiMove, MyType,alarmAlarmJsonFile
-from time import sleep
+from time import sleep, time
 import numpy as np
 import re
 
@@ -27,8 +27,11 @@ def ConnectRobot():
         print(":( Failed to connect :(")
         raise e
 
-def RunPoint(move: DobotApiMove, point_list: list):
-    move.MovL(point_list[0], point_list[1], point_list[2], point_list[3])
+def RunPoint(move: DobotApiMove, point: tuple):
+    if len(point) != 4:
+        raise ValueError(f"Point must have exactly 4 elements (x, y, z, r), but got: {point}")
+    move.JointMovJ(point[0], point[1], point[2], point[3])
+
 
 def GetFeed(feed: DobotApi):
     global current_actual
@@ -109,6 +112,11 @@ def ClearRobotError(dashboard: DobotApiDashboard):
             dashboard.Continue()
       globalLockValue.release()
       sleep(5)
+      
+# Function to process each point
+def process_point(point):
+    # Add processing logic for each point here
+    print(f"Processing point: {point}")
        
 if __name__ == '__main__':
     dashboard, move, feed = ConnectRobot()
@@ -124,17 +132,63 @@ if __name__ == '__main__':
     print("Loop execution...")
     # point_a = [20, 280, -60, 200]
     # point_b = [160, 260, -30, 170]
+    point_c = [-11.82, -25.38, 201.26, 123.69]
     
-    while True: 
-        points = []  # Initialize a list to store the points
-        with open('cartesian_coordinates.txt', 'r') as file:
-            for line in file:
-                # Split the line into components and convert to float
+while True:
+    with open('joint_coordinates.txt', 'r') as file:
+        for line_num, line in enumerate(file, 1):
+            try:
+                # Parse line into coordinates, assuming they are separated by commas
+                point = [float(value.strip()) for value in line.split(',')]
+                
+                # Ensure there are exactly 4 values for joint coordinates (adjust this as needed)
+                if len(point) != 4:
+                    print(f"Error in line {line_num}: Expected 4 joint coordinates but found {len(point)}")
+                    continue
+                
+                # Process the point
+                process_point(point)
+                
+                # Run the move and wait for the robot to arrive at the point
+                ip = "192.168.1.6"
+                movePort = 30003
+                move = DobotApiMove(ip, movePort)
                 try:
-                    x, y, z, r = map(float, line.strip().split())
-                    points.append((x, y, z, r))  # Append the tuple of coordinates to the list
-                except ValueError:
-                    print(f"Skipping line due to formatting issue: {line.strip()}")
-            
-            RunPoint(move, points)
-            WaitArrive(points)
+                    RunPoint(move, point)
+                    sleep(1)
+                except Exception as e:
+                    print(f"Error in RunPoint: {e}")
+                
+                # try:
+                #     WaitArrive(point)
+                # except Exception as e:
+                #     print(f"Error in WaitArrive: {e}")
+
+            except ValueError as e:
+                print(f"Error processing line {line_num}: {e}")
+
+        # If no points were successfully processed, wait and retry
+        if not point:
+            print("No valid points found in the file. Waiting before retry...")
+            # Optionally add a delay here to avoid busy-looping
+            sleep(1)  # Adjust the sleep time if needed
+
+
+# #For single point test only
+# while True:
+#     ip = "192.168.1.6"
+#     movePort = 30003
+#     move = DobotApiMove(ip, movePort)
+#     point = [-11.82, -25.38, 201.26, 123.69]
+#     try:
+#         RunPoint(move, point)
+#     except Exception as e:
+#         print(f"Error in RunPoint: {e}")
+    
+#     try:
+#         WaitArrive(point)
+#     except Exception as e:
+#         print(f"Error in WaitArrive: {e}")
+
+    # # Optionally add a delay before reopening the file and processing the next set of points
+    # time.sleep(1)  # Adjust the sleep time if needed

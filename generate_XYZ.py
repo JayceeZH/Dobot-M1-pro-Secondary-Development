@@ -5,9 +5,9 @@ num_coordinates = 100
 
 # Define limits based on the M1-Pro's workspace
 x_limits = (-200, 200)
-y_limits = (-200, 200)
-z_limits = (5, 245) # in unit of mm
-rotation_limits = (0, 360) #range of end effector rotation degree
+y_limits = (100, 200)
+z_limits = (100, 240) # in unit of mm
+rotation_limits = (0, 390) #range of end effector rotation degree
 
 # Generate random Cartesian coordinates
 cartesian_coords = []
